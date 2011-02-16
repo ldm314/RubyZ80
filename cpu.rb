@@ -66,70 +66,77 @@ class Z80cpu
   end
 
   # addr_x 
-  def addr_a
+  def addr_a(carry = 0)
     a = @registers.a
     x = @registers.a
-    @registers.a += x                              # Perform addition
+    @registers.a += x + carry                       # Perform addition
     @registers.a = @registers.a & 255               # Mask to 8-bits
-    @registers.f = add_flags(@registers.a,a,x,0)    # calculate flags
+    @registers.f = add_flags(@registers.a,a,x,carry)    # calculate flags
     @registers.m = 1
     @registers.t = 4                # 1 M taken
   end
-  def addr_b
+  def addr_b(carry = 0)
     a = @registers.a
     x = @registers.b
-    @registers.a += x                              # Perform addition
+    @registers.a += x + carry                               # Perform addition
     @registers.a = @registers.a & 255               # Mask to 8-bits
-    @registers.f = add_flags(@registers.a,a,x,0)    # calculate flags
+    @registers.f = add_flags(@registers.a,a,x,carry)    # calculate flags
     @registers.m = 1
     @registers.t = 4                # 1 M taken
   end
-  def addr_c
+  def addr_c(carry = 0)
     a = @registers.a
     x = @registers.c
-    @registers.a += x                              # Perform addition
+    @registers.a += x + carry                               # Perform addition
     @registers.a = @registers.a & 255               # Mask to 8-bits
-    @registers.f = add_flags(@registers.a,a,x,0)    # calculate flags
+    @registers.f = add_flags(@registers.a,a,x,carry)    # calculate flags
     @registers.m = 1
     @registers.t = 4                # 1 M taken
   end
-  def addr_d
+  def addr_d(carry = 0)
     a = @registers.a
     x = @registers.d
-    @registers.a += x                              # Perform addition
+    @registers.a += x + carry                               # Perform addition
     @registers.a = @registers.a & 255               # Mask to 8-bits
-    @registers.f = add_flags(@registers.a,a,x,0)    # calculate flags
+    @registers.f = add_flags(@registers.a,a,x,carry)    # calculate flags
     @registers.m = 1
     @registers.t = 4                # 1 M taken
   end
-  def addr_e
+  def addr_e(carry = 0)
     a = @registers.a
     x = @registers.e
-    @registers.a += x                              # Perform addition
+    @registers.a += x + carry                               # Perform addition
     @registers.a = @registers.a & 255               # Mask to 8-bits
-    @registers.f = add_flags(@registers.a,a,x,0)    # calculate flags
+    @registers.f = add_flags(@registers.a,a,x,carry)    # calculate flags
     @registers.m = 1
     @registers.t = 4                # 1 M taken
   end
-  def addr_h
+  def addr_h(carry = 0)
     a = @registers.a
     x = @registers.h
-    @registers.a += x                              # Perform addition
+    @registers.a += x + carry                               # Perform addition
     @registers.a = @registers.a & 255               # Mask to 8-bits
-    @registers.f = add_flags(@registers.a,a,x,0)    # calculate flags
+    @registers.f = add_flags(@registers.a,a,x,carry)    # calculate flags
     @registers.m = 1
     @registers.t = 4                # 1 M taken
   end
-  def addr_l
+  def addr_l(carry = 0)
     a = @registers.a
     x = @registers.l
-    @registers.a += x                              # Perform addition
+    @registers.a += x + carry                               # Perform addition
     @registers.a = @registers.a & 255               # Mask to 8-bits
-    @registers.f = add_flags(@registers.a,a,x,0)    # calculate flags
+    @registers.f = add_flags(@registers.a,a,x,carry)    # calculate flags
     @registers.m = 1
     @registers.t = 4                # 1 M taken
   end
   
+  def adcr_a; addr_a(@registers.f & Z80cpu.CARRY); end
+  def adcr_b; addr_b(@registers.f & Z80cpu.CARRY); end
+  def adcr_c; addr_c(@registers.f & Z80cpu.CARRY); end
+  def adcr_d; addr_d(@registers.f & Z80cpu.CARRY); end
+  def adcr_e; addr_e(@registers.f & Z80cpu.CARRY); end
+  def adcr_h; addr_h(@registers.f & Z80cpu.CARRY); end
+  def adcr_l; addr_l(@registers.f & Z80cpu.CARRY); end
 
   
 end
