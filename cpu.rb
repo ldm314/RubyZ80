@@ -1,3 +1,5 @@
+require 'ops'
+
 class Z80clock
   attr_accessor :m
   attr_accessor :t
@@ -38,10 +40,29 @@ class Z80registers
   
 end
 
+class Z80memory
+  def initialize
+    @memory = Array.new(65536,0)
+  end
+  
+  def rb(addr)
+    @memory[addr]
+  end
+  
+  def wb(addr,value)
+    @memory[addr] = value
+  end
+  
+  def load(mem)
+    i = 0
+    mem.each { |x| @memory[i] = x; i+=1; }
+  end
+end
+
 class Z80cpu
   attr_accessor :clock
   attr_accessor :registers
-  
+  attr_accessor :memory
   SIGN = 128
   ZERO = 64
   HC = 16
@@ -53,6 +74,8 @@ class Z80cpu
   def initialize
     @clock = Z80clock.new
     @registers = Z80registers.new
+    @memory = Z80memory.new
+    @halted = false
   end
 
   def add_flags(a, old_x, old_y, carry)
@@ -65,7 +88,8 @@ class Z80cpu
     f
   end
 
-  # addr_x 
+  # addr_x
+   
   def addr_a(carry = 0)
     a = @registers.a
     x = @registers.a
@@ -130,6 +154,17 @@ class Z80cpu
     @registers.t = 4                # 1 M taken
   end
   
+  def addn(carry = 0)
+    a = @registers.a
+    x = @memory.rb[@registers.pc]
+    @registers.pc = @registers.pc + 1
+    @registers.a += x + carry                           # Perform addition
+    @registers.a = @registers.a & 255                   # Mask to 8-bits
+    @registers.f = add_flags(@registers.a,a,x,carry)    # calculate flags
+    @registers.m = 2
+    @registers.t = 7                # 2 M taken
+  end
+  
   def adcr_a; addr_a(@registers.f & Z80cpu.CARRY); end
   def adcr_b; addr_b(@registers.f & Z80cpu.CARRY); end
   def adcr_c; addr_c(@registers.f & Z80cpu.CARRY); end
@@ -138,5 +173,23 @@ class Z80cpu
   def adcr_h; addr_h(@registers.f & Z80cpu.CARRY); end
   def adcr_l; addr_l(@registers.f & Z80cpu.CARRY); end
 
+  def halt
+    @halted = true
+  end
+  
+  def load(mem)
+    @memory.load(mem)
+  end
+
+  def run
+    while not @halted do
+      op = @memory.rb[@registers.pc]
+      @registers.pc += 1
+      execute(op)
+      @registers.pc = @registers.pc & 65535
+      @clock.m += @registers.m
+      @clock.t += @registers.t
+    end
+  end
   
 end
