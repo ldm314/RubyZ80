@@ -9,15 +9,15 @@ module Z80ops
   ADDA_HL = 0x86
   ADDA_N = 0xC6
 
-  ADCA_A = 0x87 + 8
-  ADCA_B = 0x80 + 8
-  ADCA_C = 0x81 + 8
-  ADCA_D = 0x82 + 8
-  ADCA_E = 0x83 + 8
-  ADCA_H = 0x84 + 8
-  ADCA_L = 0x85 + 8
-  ADCA_HL = 0x86 + 8
-  ADCA_N = 0xC6 + 8
+  ADCA_A = 0x8F
+  ADCA_B = 0x88
+  ADCA_C = 0x89
+  ADCA_D = 0x8A
+  ADCA_E = 0x8B
+  ADCA_H = 0x8C
+  ADCA_L = 0x8D
+  ADCA_HL = 0x8E
+  ADCA_N = 0xCE 
   
   #todo, ops with IX, IY 
   
