@@ -34,7 +34,17 @@ module Z80ops
   SBCA_H = 0x9C
   SBCA_L = 0x9D
   SBCA_HL = 0x9E
-  SBCA_N = 0xDE  
+  SBCA_N = 0xDE
+  ANDA_A = 0xA7
+  ANDA_B = 0xA0
+  ANDA_C = 0xA1
+  ANDA_D = 0xA2
+  ANDA_E = 0xA3
+  ANDA_H = 0xA4
+  ANDA_L = 0xA5
+  ANDA_HL = 0xA6
+  ANDA_N = 0xE6
+  
   #todo, ops with IX, IY 
   
 end
@@ -48,6 +58,7 @@ class Z80cpu
     f = f | HC if ((old_x & 0xF) + (old_y & 0xF) + carry) > 15 #half carry
     f = f | CARRY if old_x + old_y + carry  > 255     # carry
     f = f | OVER if ((old_x & SIGN) ==  (old_y & SIGN)) && ((a & SIGN) != (old_x & SIGN))      # Check for overflow
+    f
   end
 
   def sub_flags(a, old_x, old_y, carry)
@@ -57,6 +68,15 @@ class Z80cpu
     f = f | HC if ((old_y & 0xF) + carry ) > (old_x & 0xF) #half carry
     f = f | CARRY if (old_y + carry) > old_x
     f = f | OVER if ((old_x & SIGN) != (old_y & SIGN)) && ((a & SIGN) != (old_x & SIGN))
+    f
+  end
+  
+  def logic_flags(a)
+    f = HC
+    f = f | SIGN  if (a & SIGN) != 0  # sign
+    f = f | ZERO  if (a & 255) == 0   # Check for zero
+    f = f | OVER  if !a.to_s(2).count('1').odd?
+    f
   end
   
   
@@ -256,5 +276,87 @@ class Z80cpu
   def sbca_n; suba_n(@registers.f & Z80cpu.CARRY); end
   def sbca_hl; suba_hl(@registers.f & Z80cpu.CARRY); end
 
+  def anda_a(carry = 0)
+    a = @registers.a
+    x = @registers.a
+    @registers.a = a & x                     
+    @registers.a = @registers.a & 255               # Mask to 8-bits
+    @registers.f = logic_flags(@registers.a)    # calculate flags
+    @registers.m = 1
+    @registers.t = 4                # 1 M taken
+  end
+  def anda_b(carry = 0)
+    a = @registers.a
+    x = @registers.b
+    @registers.a = a & x                     
+    @registers.a = @registers.a & 255               # Mask to 8-bits
+    @registers.f = logic_flags(@registers.a)    # calculate flags
+    @registers.m = 1
+    @registers.t = 4                # 1 M taken
+  end
+  def anda_c(carry = 0)
+    a = @registers.a
+    x = @registers.c
+    @registers.a = a & x                     
+    @registers.a = @registers.a & 255               # Mask to 8-bits
+    @registers.f = logic_flags(@registers.a)    # calculate flags
+    @registers.m = 1
+    @registers.t = 4                # 1 M taken
+  end
+  def anda_d(carry = 0)
+    a = @registers.a
+    x = @registers.d
+    @registers.a = a & x                     
+    @registers.a = @registers.a & 255               # Mask to 8-bits
+    @registers.f = logic_flags(@registers.a)    # calculate flags
+    @registers.m = 1
+    @registers.t = 4                # 1 M taken
+  end
+  def anda_e(carry = 0)
+    a = @registers.a
+    x = @registers.e
+    @registers.a = a & x                     
+    @registers.a = @registers.a & 255               # Mask to 8-bits
+    @registers.f = logic_flags(@registers.a)    # calculate flags
+    @registers.m = 1
+    @registers.t = 4                # 1 M taken
+  end
+  def anda_h(carry = 0)
+    a = @registers.a
+    x = @registers.h
+    @registers.a = a & x                     
+    @registers.a = @registers.a & 255               # Mask to 8-bits
+    @registers.f = logic_flags(@registers.a)    # calculate flags
+    @registers.m = 1
+    @registers.t = 4                # 1 M taken
+  end
+  def anda_l(carry = 0)
+    a = @registers.a
+    x = @registers.l
+    @registers.a = a & x                     
+    @registers.a = @registers.a & 255               # Mask to 8-bits
+    @registers.f = logic_flags(@registers.a)    # calculate flags
+    @registers.m = 1
+    @registers.t = 4                # 1 M taken
+  end
+  def anda_n(carry = 0)
+    a = @registers.a
+    x = @memory.rb[@registers.pc]
+    @registers.pc = @registers.pc + 1
+    @registers.a = a & x                           
+    @registers.a = @registers.a & 255                   # Mask to 8-bits
+    @registers.f = logic_flags(@registers.a)    # calculate flags
+    @registers.m = 2
+    @registers.t = 7                # 2 M taken
+  end
+  def anda_hl(carry = 0)
+    a = @registers.a
+    x = @memory.rb[((@registers.h << 8) & 0xF0) | ((@registers.l << 8) & 0x0F)]
+    @registers.a = a & x                           # Perform addition
+    @registers.a = @registers.a & 255                   # Mask to 8-bits
+    @registers.f = add_flags(@registers.a)    # calculate flags
+    @registers.m = 2
+    @registers.t = 7                # 2 M taken
+  end
   
 end
